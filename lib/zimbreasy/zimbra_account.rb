@@ -1,8 +1,11 @@
 module Zimbreasy
-  module Mail
+  module Account
   
-    def get_appt_summaries(auth)
-     client = Savon::Client.new
+    def self.auth(auth)
+      client = Savon::Client.new do |xml|
+        wsdl.endpoint = "/service/soap"
+        wsdl.namespace
+      end
         
       client.config.pretty_print_xml = true
       client.config.log = false
@@ -15,20 +18,18 @@ module Zimbreasy
       mini_namespaces = {
         "xmlns="=>"urn:zimbraAccount"
       }
-      response = client.request "CreateAppointmentRequest"  do
+      response = client.request "AuthRequest"  do
         http.headers = { "Content-Length" => "0", "Connection" => "Keep-Alive" }
         client.http.headers["SOAPAction"] =  "http://schema.microbilt.com/messages/GetReport"
 
         soap.xml do |xml|
           xml.soap(:Envelope, namespaces) do |xml|
-            xml.soap(:Header) do |xml|
-              xml.context(mini_namespaces) do |xml|
-                xml.authToken(auth[:auth_token])
-              end
-            end
-
+            xml.soap(:Header) 
             xml.soap(:Body) do |xml|
-              xml.GetAppointmentSummariesRequest({"s" => 0, "e" => Time.now.to_i*1000})
+              xml.AuthRequest({"persistAuthTokenCookie"=> 1}) do |xml|
+                xml.account(auth[:user], {"by" => "name"})
+                xml.password(auth[:password])
+              end
             end
           end
         end

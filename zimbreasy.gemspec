@@ -14,9 +14,4 @@ Gem::Specification.new do |gem|
   gem.name          = "zimbreasy"
   gem.require_paths = ["lib"]
   gem.version       = Zimbreasy::VERSION
-  gem.add_dependency 'rest_client'
-  gem.add_dependency 'cgi'
-  gem.add_dependency 'json'
-  gem.add_dependency 'icalendar'
-  gem.add_dependency 'date'
 end
