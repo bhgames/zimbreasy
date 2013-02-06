@@ -1,6 +1,6 @@
 # Zimbreasy
 
-TODO: Write a gem description
+Thanks to Crankin's 2007 for assisting me with this.
 
 ## Installation
 
