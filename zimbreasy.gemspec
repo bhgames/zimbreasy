@@ -4,8 +4,8 @@ require File.expand_path('../lib/zimbreasy/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["Jordan Prince"]
   gem.email         = ["jordanmprince@gmail.com"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
+  gem.description   = %q{A no-nonsense gem for the nonsensical Zimbra API.}
+  gem.summary       = %q{A no-nonsense gem for the nonsensical Zimbra API.}
   gem.homepage      = ""
 
   gem.files         = `git ls-files`.split($\)
