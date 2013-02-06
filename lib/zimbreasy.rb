@@ -1,5 +1,5 @@
 require "zimbreasy/version"
-require "zimbreasy/zimbra_mail"
+require "zimbreasy/mail"
+require "zimbreasy/account"
 module Zimbreasy
-  # Your code goes here...
 end
