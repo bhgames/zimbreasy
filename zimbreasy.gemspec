@@ -14,4 +14,9 @@ Gem::Specification.new do |gem|
   gem.name          = "zimbreasy"
   gem.require_paths = ["lib"]
   gem.version       = Zimbreasy::VERSION
+
+  gem.add_dependency 'test-unit'
+  gem.add_dependency 'savon', '~> 1.1.0'
+  gem.add_dependency 'nokogiri'
+  gem.add_dependency 'icalendar'
 end
