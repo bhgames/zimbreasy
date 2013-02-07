@@ -43,7 +43,7 @@ module Zimbreasy
       calendar.event do
         dtstart       params[:start_time]
         dtend         params[:end_time]
-        summary       params[:desc]
+        summary       params[:name]
         description   params[:desc]
         uid           params[:appt_id]
         klass         "PRIVATE"  
@@ -58,8 +58,44 @@ module Zimbreasy
       end
 
       comp = response[:get_appointment_response][:appt][:inv][:comp]
-      hash = {:start_time => comp[:s][:@d], :end_time => comp[:e][:@d], :desc => comp[:desc], :appt_id => id}
+
+      hash = {
+        :start_time => comp[:s][:@d], 
+        :end_time => comp[:e][:@d], 
+        :desc => comp[:desc],  
+        :name => comp[:@name],
+        :appt_id => id
+      }
+
       make_ical(hash)
+    end 
+
+    def get_appt_summaries(start_date, end_date)
+      start_date = start_date.to_i*1000 #it wants millis, to_i gives seconds.
+      end_date = end_date.to_i*1000
+
+      response = account.make_call("GetApptSummariesRequest") do |xml|
+        xml.GetApptSummariesRequest({ "xmlns" => @zimbra_namespace, "e" => end_date, "s" => start_date})
+      end
+
+      return [] if response[:get_appt_summaries_response][:appt].nil?
+
+      appts = []
+
+      response[:get_appt_summaries_response][:appt].each do |appt|
+
+        inst = appt[:inst]
+                  
+        hash = {
+          :start_time => Zimbreasy.zimbra_date(Time.at(inst[:@s].to_f/1000.0)), 
+          :name => appt[:@name], 
+          :appt_id => appt[:@id]
+        }
+
+        appts << make_ical(hash)
+      end
+      
+      appts
     end 
 
   end
