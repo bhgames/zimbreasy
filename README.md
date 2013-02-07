@@ -37,7 +37,14 @@ It's pretty simple to use, I will post some examples:
 
     zs = Zimbreasy::Account.new('username', 'password', "https://yourzimbraserver.com/service/soap"); #login
     zm = Zimbreasy::Mail.new(zs); #create a Zimbreasy::Mail object. This has methods for the ZimbraMail submodule of their API.
-    z = zm.create_appointment({:appointee_email => "neo@matrix.com", :start_time => Time.now+1.days, :end_time => (Time.now+1.days+1.hours), :name => "Joss Whedon Meeting", :subject => "Hallelujah", :desc => "Ridiculous stuff happening here"}) #I create an appointment.
+    z = zm.create_appointment({
+      :appointee_email => "neo@matrix.com", 
+      :start_time => Time.now+1.days, 
+      :end_time => (Time.now+1.days+1.hours), 
+      :name => "Joss Whedon Meeting", 
+      :subject => "Hallelujah", 
+      :desc => "Ridiculous stuff happening here"
+    }) #I create an appointment.
 
     => "BEGIN:VCALENDAR\r\nCALSCALE:GREGORIAN\r\nPRODID:iCalendar-Ruby\r\nVERSION:2.0\r\nBEGIN:VEVENT\r\nDESCRIPTION:Poopmaster\r\nDTEND:20130208T171612\r\nDTSTAMP:20130207T161614\r\nDTSTART:20130208T161612\r\nCLASS:PRIVATE\r\nSEQUENCE:0\r\nSUMMARY:Jossss\r\nUID:336-335\r\nEND:VEVENT\r\nEND:VCALENDAR\r\n"
 
@@ -49,7 +56,14 @@ The Other methods of note:
 
     zm.get_appointment(336) #takes appt id
   
-    zm.modify_appointment({:appointee_email => "neo@matrix.com", :start_time => Time.now, :end_time => (Time.now+2.hours), :name => "Joss Whedon!!!", :subject => "Hallelujah 2: The Electric Boogaloo", :desc => "Yoda Fights Back", :inv_id => "336-335"})
+    zm.modify_appointment({
+      :appointee_email => "neo@matrix.com", 
+      :start_time => Time.now, 
+      :end_time => (Time.now+2.hours), 
+      :name => "Joss Whedon!!!", 
+      :subject => "Hallelujah 2: The Electric Boogaloo", 
+      :desc => "Yoda Fights Back", :inv_id => "336-335"
+    })
 
     zm.cancel_appointment("336-335")
 
@@ -58,7 +72,7 @@ it seems Zimbra API only works with invitation, not appointment ids, when it com
 
     zm.get_appt_summaries(Time.now-1.days, Time.now)
 
-This just returns appointment Ics texts in an array.
+This just returns appointment Ics texts in an array. First arg is a Time object representing start date, second arg is end date.
 
 ## Contributing
 
