@@ -27,23 +27,9 @@ module Zimbreasy
         end
       end
       params.merge!({:appt_id => response.body[:create_appointment_response][:@inv_id]})
-      make_ical(params)
+      to_ical(params)
     end
  
-    def make_ical(params)
-      calendar = Calendar.new   
-      calendar.event do
-        dtstart       params[:start_time]
-        dtend         params[:end_time]
-        summary       params[:name]
-        description   params[:desc]
-        uid           params[:appt_id]
-        klass         "PRIVATE"  
-      end
-      
-      calendar.to_ical
-    end
-
     def get_appointment(appt_id)
       response = account.make_call("GetAppointmentRequest") do |xml|
         xml.GetAppointmentRequest({ "xmlns" => @zimbra_namespace, "id" => appt_id})
@@ -59,7 +45,7 @@ module Zimbreasy
         :appt_id => appt_id
       }
 
-      make_ical(hash)
+      to_ical(hash)
     end 
 
     def get_appt_summaries(start_date, end_date)
@@ -84,7 +70,7 @@ module Zimbreasy
           :appt_id => appt[:@id]
         }
 
-        appts << make_ical(hash)
+        appts << to_ical(hash)
       end
       
       appts
@@ -104,7 +90,7 @@ module Zimbreasy
         end
       end
     
-      make_ical(params)
+      to_ical(params)
     end
 
     #returns true if it worked, inv_id is not appt_id, it's normally something like 320-319, the first number is appt_id.
@@ -127,6 +113,20 @@ module Zimbreasy
     end
 
     private
+
+    def to_ical(params)
+      calendar = Calendar.new   
+      calendar.event do
+        dtstart       params[:start_time]
+        dtend         params[:end_time]
+        summary       params[:name]
+        description   params[:desc]
+        uid           params[:appt_id]
+        klass         "PRIVATE"  
+      end
+      
+      calendar.to_ical
+    end
 
     def appointment_xml_block(xml, params)
       xml.m({"su" => params[:subject]}) do |xml|
