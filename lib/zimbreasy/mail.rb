@@ -21,20 +21,10 @@ module Zimbreasy
 
       response = account.make_call("CreateAppointmentRequest") do |xml|
         xml.CreateAppointmentRequest({ "xmlns" => @zimbra_namespace}) do |xml|
-          xml.m({"su" => params[:subject]}) do |xml|
-            xml.mp({"ct" =>(params[:mime_type] || "text/plain")})
-            xml.inv({"rsvp" => "1", "compNum" => "0", "method" => "none", "name" => params[:name] }) do |xml| 
-              xml.mp({"ct" =>(params[:mime_type] || "text/plain")})
-              xml.desc(params[:desc]) 
-              xml.s({"d" => params[:start_time]}) if params[:start_time]
-              xml.e({"d" => params[:end_time]}) if params[:end_time]
-            end 
-            
-            xml.e({"a" => params[:appointee_email], "t" => "t"})
-          end
+          appointment_xml_block(xml, params)
         end
       end
-      params.merge!({:appt_id => response.body[:create_appointment_response][:@appt_id]})
+      params.merge!({:appt_id => response.body[:create_appointment_response][:@cal_item_id]})
       make_ical(params)
     end
  
@@ -98,5 +88,37 @@ module Zimbreasy
       appts
     end 
 
+    #same param options as create_appointment, but you can add :appt_id too.
+    def modify_appointment(params)
+      params[:start_time] = Zimbreasy.zimbra_date(params[:start_time]) if params[:start_time]
+      params[:end_time] = Zimbreasy.zimbra_date(params[:end_time]) if params[:end_time]
+
+      response = account.make_call("ModifyAppointmentRequest") do |xml|
+        xml.ModifyAppointmentRequest({ 
+          "xmlns" => @zimbra_namespace, 
+          "id" => "#{params[:appt_id]}-#{params[:appt_id].to_i-1}"
+        }) do |xml|
+          appointment_xml_block(xml, params)
+        end
+      end
+    
+      make_ical(params)
+    end
+
+    private
+
+    def appointment_xml_block(xml, params)
+      xml.m({"su" => params[:subject]}) do |xml|
+        xml.mp({"ct" =>(params[:mime_type] || "text/plain")})
+        xml.inv({"rsvp" => "1", "compNum" => "0", "method" => "none", "name" => params[:name] }) do |xml| 
+          xml.mp({"ct" =>(params[:mime_type] || "text/plain")})
+          xml.desc(params[:desc]) 
+          xml.s({"d" => params[:start_time]}) if params[:start_time]
+          xml.e({"d" => params[:end_time]}) if params[:end_time]
+        end 
+        
+        xml.e({"a" => params[:appointee_email], "t" => "t"})
+      end
+    end
   end
 end
