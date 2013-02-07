@@ -52,7 +52,7 @@ It's pretty simple to use, I will post some examples:
 create_appointment returns ics formatted data, for use with icalendar. Notice that the UID in the data is 336-335. This is an invitation id, not an appointment id.
 The appointment id is 336, the first part of it.
 
-The Other methods of note:
+The other methods of note:
 
     zm.get_appointment(336) #takes appt id
   
