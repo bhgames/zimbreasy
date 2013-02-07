@@ -22,6 +22,9 @@ TODO: Write usage instructions here
 
 ## Contributing
 
+It'd be great if someone could write tests for these methods, I haven't had the time. If you want to write tests,
+please do!
+
 1. Fork it
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Added some feature'`)
