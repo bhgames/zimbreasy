@@ -1,6 +1,7 @@
 module Zimbreasy
   class Account
     attr_accessor :user, :pass, :endpoint, :client, :soap_namespace, :zimbra_namespace
+
     def initialize(user, pass, endpoint)
       @user = user
       @pass = pass
@@ -31,7 +32,7 @@ module Zimbreasy
       end
 
       @client.config.pretty_print_xml = true
-      @client.config.log = true
+      @client.config.log = false
 
       response = @client.request method  do
         soap.xml do |xml|

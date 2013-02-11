@@ -2,6 +2,7 @@ module Zimbreasy
   class Mail
     include Icalendar
     attr_accessor :account, :zimbra_namespace
+
     def initialize(account)
       @account = account
       @zimbra_namespace = "urn:zimbraMail"
@@ -26,7 +27,9 @@ module Zimbreasy
           appointment_xml_block(xml, params)
         end
       end
+      
       params.merge!({:appt_id => response.body[:create_appointment_response][:@inv_id]})
+
       to_ical(params)
     end
  
@@ -90,7 +93,7 @@ module Zimbreasy
         end
       end
     
-      to_ical(params)
+      to_ical(params.merge({:appt_id => params[:inv_id]}))
     end
 
     #returns true if it worked, inv_id is not appt_id, it's normally something like 320-319, the first number is appt_id.
@@ -124,7 +127,6 @@ module Zimbreasy
         uid           params[:appt_id]
         klass         "PRIVATE"  
       end
-      
       calendar.to_ical
     end
 
