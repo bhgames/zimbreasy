@@ -63,13 +63,27 @@ module Zimbreasy
 
       appts = []
 
-      response[:get_appt_summaries_response][:appt].each do |appt|
+      if response[:get_appt_summaries_response][:appt].is_a?(Array)
+        response[:get_appt_summaries_response][:appt].each do |appt|
+          
+          inst = appt[:inst]
+                    
+          hash = {
+            :start_time => Zimbreasy.zimbra_date(Time.at(inst[:@s].to_f/1000.0)), 
+            :name => appt[:@name], 
+            :appt_id => appt[:@id]
+          }
+
+          appts << to_ical(hash)
+        end
+      else 
+        appt = response[:get_appt_summaries_response][:appt]
 
         inst = appt[:inst]
-                  
+
         hash = {
-          :start_time => Zimbreasy.zimbra_date(Time.at(inst[:@s].to_f/1000.0)), 
-          :name => appt[:@name], 
+          :start_time => Zimbreasy.zimbra_date(Time.at(inst[:@s].to_f/1000.0)),
+          :name => appt[:@name],
           :appt_id => appt[:@id]
         }
 
