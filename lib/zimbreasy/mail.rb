@@ -135,7 +135,7 @@ module Zimbreasy
     end
 
     #returns true if it worked, inv_id is not appt_id, it's normally something like 320-319, the first number is appt_id.
-    def cancel_appointment(inv_id, emails)
+    def cancel_appointment(inv_id, emails, subject, content)
       unless inv_id and inv_id.is_a?(String) and inv_id.match(/-/) and inv_id.split("-").count==2 #so it has x-y formatting.
         raise 'inv_id must be string of format x-y, where x and y are numbers.'
       end
@@ -146,16 +146,26 @@ module Zimbreasy
           "id" => inv_id,
           "comp" => 0
         }) do |xml|
-          xml.inv({"id" => inv_id, "method" => "none", "compNum" => "0", "rsvp" => "1"}) do |xml|
-            xml.comp({"method" => "none", "compNum" => "0", "rsvp" => "1"}) do |xml|
-              emails.each do |email|
-                xml.at({"a" => email})
-              end
+
+          xml.m do |xml|
+            emails.each do |email|
+              xml.e({"a" => email, "t" => "t"})
             end
+
+            xml.su(subject)
+
+            xml.mp({"ct" => "text/plain"}) do |xml|
+              xml.content(content)
+            end
+
+            #xml.inv({"id" => inv_id, "method" => "none", "compNum" => "0", "rsvp" => "1"}) do |xml|
+            #  xml.comp({"method" => "none", "compNum" => "0", "rsvp" => "1"}) do |xml|
+            # end
+            #end
           end
         end
       end
-      binding.pry
+
       return !response.body[:cancel_appointment_response].nil?
     end
 
