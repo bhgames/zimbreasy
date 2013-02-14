@@ -32,6 +32,30 @@ module Zimbreasy
 
       to_ical(params)
     end
+
+    def get_free_busy(start_time, end_time, email)
+      start_time = start_time.to_i*1000 #it wants millis, to_i gives seconds.
+      end_time = end_time.to_i*1000
+      response = account.make_call("GetFreeBusyRequest") do |xml|
+        xml.GetFreeBusyRequest({"xmlns" => @zimbra_namespace, "s" => start_time, "e" => end_time}) do |xml|
+          xml.usr({"name" => email})
+        end
+      end 
+ 
+      array = [] 
+      return response[:get_free_busy_response][:usr].reject { |k,v| k if k == :@id }.inject(Hash.new) do |hash, entry|
+        if entry[1].is_a?(Array)
+          array_of_times = entry[1].inject(Array.new) do |times_array, times_entry|
+            times_array << { :s => Time.at(times_entry[:@s].to_f/1000.0), :e => Time.at(times_entry[:@e].to_f/1000.0) }
+            times_array
+          end
+          hash[entry[0]] = array_of_times 
+        else
+          hash[entry[0]] = [ {:s => Time.at(entry[1][:@s].to_f/1000.0), :e => Time.at(entry[1][:@e].to_f/1000.0)} ] 
+        end
+        hash 
+      end
+    end
  
     def get_appointment(appt_id)
       response = account.make_call("GetAppointmentRequest") do |xml|
