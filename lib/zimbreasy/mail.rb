@@ -9,7 +9,7 @@ module Zimbreasy
     end
 
     #Params can contain the following:
-    #:appointee_email(req)
+    #:appointee_emails(req)
     #:start_time(opt)
     #:end_time(opt)
     #:name(opt)
@@ -27,7 +27,7 @@ module Zimbreasy
           appointment_xml_block(xml, params)
         end
       end
-      
+    
       params.merge!({:appt_id => response.body[:create_appointment_response][:@inv_id]})
 
       to_ical(params)
@@ -193,8 +193,9 @@ module Zimbreasy
           xml.s({"d" => params[:start_time]}) if params[:start_time]
           xml.e({"d" => params[:end_time]}) if params[:end_time]
         end 
-        
-        xml.e({"a" => params[:appointee_email], "t" => "t"})
+        params[:appointee_emails].each do |email| 
+          xml.e({"a" => email, "t" => "t"})
+        end
       end
     end
   end
