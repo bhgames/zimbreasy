@@ -23,6 +23,7 @@ module Zimbreasy
     end
 
     def make_call(method,  &block)
+      tries = 0
       soap_namespace = @soap_namespace 
       #@soap_namespace is undefined inside client.request, is not this obj. So we define it here.
 
@@ -43,6 +44,14 @@ module Zimbreasy
             end
           end
         end
+      end
+    rescue Timeout::Error => e
+      pp "Retrying"
+      tries+=1
+      if tries >= 4
+        throw ZimbreasyTimeoutException.new
+      else
+        retry
       end
     end
   end
