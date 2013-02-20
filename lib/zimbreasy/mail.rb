@@ -23,11 +23,11 @@ module Zimbreasy
       params[:end_time] = Zimbreasy.zimbra_date(params[:end_time]) if params[:end_time]
 
       response = account.make_call("CreateAppointmentRequest") do |xml|
-        xml.CreateAppointmentRequest({ "xmlns" => @zimbra_namespace}) do |xml|
+        xml.CreateAppointmentRequest({ "xmlns" => @zimbra_namespace, "echo" => (params[:echo] || "0")}) do |xml|
           appointment_xml_block(xml, params)
         end
       end
-    
+
       params.merge!({:appt_id => response.body[:create_appointment_response][:@inv_id]})
 
       to_ical(params)
@@ -190,8 +190,8 @@ module Zimbreasy
         xml.inv({"rsvp" => "1", "compNum" => "0", "method" => "none", "name" => params[:name] }) do |xml| 
           xml.mp({"ct" =>(params[:mime_type] || "text/plain")})
           xml.desc(params[:desc]) 
-          xml.s({"d" => params[:start_time]}) if params[:start_time]
-          xml.e({"d" => params[:end_time]}) if params[:end_time]
+          xml.s({"d" => params[:start_time], "tz" => params[:tz]}) if params[:start_time]
+          xml.e({"d" => params[:end_time], "tz" => params[:tz]}) if params[:end_time]
         end 
         params[:appointee_emails].each do |email| 
           xml.e({"a" => email, "t" => "t"})
